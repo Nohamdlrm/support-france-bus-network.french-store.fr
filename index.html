@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScolarManager Pro | College Charles Baudelaire</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #08090d;
+            --bg-card: #12141f;
+            --accent: #b497a5;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --maintenance-orange: #ff9800;
+        }
+
+        /* --- STYLES CONNEXION --- */
+        #login-screen {
+            position: fixed; inset: 0; background: var(--bg-main);
+            display: flex; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .login-card {
+            background: var(--bg-card); padding: 40px; border-radius: 25px;
+            border: 1px solid var(--border); width: 450px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .login-card img { width: 200px; margin-bottom: 25px; }
+        
+        /* --- NOUVEAU STYLE MAINTENANCE PRO ET BEAU --- */
+        .maintenance-container {
+            font-family: 'Quicksand', sans-serif;
+            background: rgba(255, 152, 0, 0.05); /* Fond très léger orange */
+            border: 2px solid var(--maintenance-orange);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.2);
+            animation: maintenancePulse 2s infinite alternate; /* Effet de pulsation */
+        }
+
+        .maintenance-container i {
+            color: var(--maintenance-orange);
+            font-size: 1.8rem;
+            margin-top: 3px;
+        }
+
+        .maintenance-content h3 {
+            color: #fff;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .maintenance-content p {
+            color: var(--text-main);
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        .maintenance-content strong {
+            color: var(--maintenance-orange);
+            font-weight: 600;
+        }
+
+        /* Animation de pulsation douce sur la bordure */
+        @keyframes maintenancePulse {
+            0% { box-shadow: 0 0 15px rgba(255, 152, 0, 0.2); border-color: rgba(255, 152, 0, 0.8); }
+            100% { box-shadow: 0 0 25px rgba(255, 152, 0, 0.4); border-color: rgba(255, 152, 0, 1); }
+        }
+
+        .login-card input { margin-bottom: 15px; background: rgba(0,0,0,0.4); }
+        .login-card button { 
+            width: 100%; padding: 15px; background: var(--accent); border: none; 
+            border-radius: 12px; color: white; font-weight: 700; cursor: pointer; 
+        }
+
+        /* --- STRUCTURE & RESTE DU CODE (INCHANGÉ) --- */
+        * { box-sizing: border-box; font-family: 'Quicksand', sans-serif; transition: all 0.3s ease; }
+        
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #main-content-app { display: none; width: 100%; height: 100%; }
+
+        .nav-rail {
+            width: 90px;
+            background: #000;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            gap: 25px;
+        }
+
+        .nav-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #334155;
+            font-size: 1.4rem;
+        }
+
+        .nav-btn.active { background: var(--accent); color: white; box-shadow: 0 0 20px rgba(180, 151, 165, 0.3); }
+
+        .config-panel {
+            width: 580px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .logo-box { text-align: center; margin-bottom: 40px; }
+        .logo-box img { width: 280px; }
+
+        .group { margin-bottom: 25px; animation: slideIn 0.4s ease forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+
+        label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+
+        .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .choice-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .choice-card.active { border-color: var(--accent); background: rgba(180, 151, 165, 0.1); color: #fff; }
+
+        input, textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        .btn-print {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 22px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-area {
+            flex: 1;
+            background: #06070a;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        #pdf-doc {
+            width: 210mm;
+            min-height: 296.6mm;
+            background: white;
+            color: #1e293b;
+            padding: 22mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 60px rgba(0,0,0,0.5);
+        }
+
+        .pdf-header { display: flex; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 35px; }
+        .pdf-header img { height: 75px; }
+
+        .doc-tag {
+            background: #1e293b;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: inline-block;
+        }
+        .tag-giant { font-size: 3.5rem !important; padding: 20px 40px !important; display: block; text-align: center; }
+
+        .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        .cell b { display: block; font-size: 0.75rem; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .cell span { font-size: 1.1rem; font-weight: 600; color: #0f172a; }
+
+        .main-content {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 30px;
+            border-radius: 0 25px 25px 25px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+            white-space: pre-wrap;
+        }
+
+        .signatures-area { display: flex; justify-content: space-between; margin-top: 50px; }
+        .sig-box { width: 220px; text-align: center; }
+        .sig-line { height: 60px; border-bottom: 1px solid #cbd5e0; margin-bottom: 12px; }
+
+        .hidden { display: none !important; }
+        .watermark { position: absolute; bottom: 40px; right: 40px; width: 170px; opacity: 0.08; transform: rotate(-15deg); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="login-screen">
+        <div class="login-card">
+            <img src="https://cdn.discordapp.com/attachments/1490710291393024163/1" alt="Logo">
+            
+            <div class="maintenance-container">
+                <i class="fas fa-tools"></i>
+                <div class="maintenance-content">
+                    <h3>Opération de Maintenance</h3>
+                    <p>Bonjour, une maintenance planifiée aura lieu le <strong>10/04/2026</strong> de <strong>10h à 20h</strong>. L'accès au service pourra être perturbé durant cette période.</p>
+                </div>
+            </div>
+
+            <input type="text" id="uid" placeholder="Identifiant">
+            <input type="password" id="ups" placeholder="Mot de passe">
+            <button onclick="check()">Accéder au Portail</button>
+            <p id="l-err" style="color:red; display:none; font-size:0.8rem; margin-top:10px;">Identifiants invalides</p>
+        </div>
+    </div>
+
+    <div id="main-content-app">
+        <div class="nav-rail">
+            <div class="nav-btn active" id="tab-gest" onclick="setMode('gest')"><i class="fas fa-gavel"></i></div>
+            <div class="nav-btn" id="tab-cont" onclick="setMode('cont')"><i class="fas fa-file-contract"></i></div>
+            <div class="nav-btn" id="tab-fin" onclick="setMode('fin')"><i class="fas fa-door-open"></i></div>
+        </div>
+
+        <div class="config-panel">
+            <div class="logo-box">
+                <img src="https://cdn.discordapp.com/attachments/1490710291393024163/1491840558380093620/Design_sans_titre.png?ex=69d9284a&is=69d7d6ca&hm=72eab6556fb00cd37d7f815b0ec8f75998e84db85b07593b02e3fa7e4be424be" alt="Logo">
+            </div>
+
+            <div id="ui-gest" class="group">
+                <label>Nature de la sanction</label>
+                <div class="choice-grid">
+                    <div class="choice-card active" onclick="setSub(this, 'Avertissement')">Avertissement</div>
+                    <div class="choice-card" onclick="setSub(this, 'Perte d\'emploi temporaire')">Perte d'emploi</div>
+                    <div class="choice-card" onclick="setSub(this, 'Démissionnement')">Démissionnement</div>
+                </div>
+            </div>
+
+            <div id="ui-cont" class="group hidden">
+                <label>Type de contrat</label>
+                <div class="choice-grid">
+                    <div class="choice-card" onclick="setSub(this, 'CDI')">Cdi</div>
+                    <div class="choice-card" onclick="setSub(this, 'CDD')">Cdd</div>
+                    <div class="choice-card" onclick="setSub(this, 'Contrat Extras')">Extras</div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>Volume horaire hebdomadaire</label>
+                    <input type="text" id="in_hours" placeholder="Ex: 35 heures / semaine" oninput="sync()">
+                </div>
+            </div>
+
+            <div id="ui-fin" class="group hidden">
+                <label>Type de rupture</label>
+                <div class="choice-grid">
+                    <div class="choice-card" onclick="setSub(this, 'Fin de contrat')">Fin de contrat</div>
+                    <div class="choice-card" onclick="setSub(this, 'Rupture conventionnelle')">Rupture conv.</div>
+                </div>
+            </div>
+
+            <div class="group">
+                <label>Nom complet du bénéficiaire</label>
+                <input type="text" id="in_name" placeholder="Prénom Nom" oninput="sync()">
+            </div>
+
+            <div class="group">
+                <label>Signataire Campus</label>
+                <input type="text" id="in_sign" placeholder="Nom du responsable" oninput="sync()">
+            </div>
+
+            <div class="group">
+                <label>Contenu détaillé du document</label>
+                <textarea id="in_body" rows="8" placeholder="Rédigez ici..." oninput="sync()"></textarea>
+            </div>
+
+            <button class="btn-print" onclick="printPDF()">
+                <i class="fas fa-file-export"></i> Éditer le document officiel
+            </button>
+        </div>
+
+        <div class="preview-area">
+            <div id="pdf-doc">
+                <div class="pdf-header">
+                    <div>
+                        <h2 style="margin:0; font-weight:700; color:#0f172a;">College Charles Baudelaire</h2>
+                        <p style="margin:0; font-size:0.8rem; color:#64748b;">Administration & Ressources Humaines</p>
+                    </div>
+                    <img src="https://cdn.discordapp.com/attachments/1490710291393024163/1491840558380093620/Design_sans_titre.png?ex=69d9284a&is=69d7d6ca&hm=72eab6556fb00cd37d7f815b0ec8f75998e84db85b07593b02e3fa7e4be424be" alt="Logo">
+                </div>
+
+                <div class="doc-tag" id="out_title">Avertissement</div>
+
+                <div class="grid-info">
+                    <div class="cell">
+                        <b>Bénéficiaire</b>
+                        <span id="out_name">...</span>
+                    </div>
+                    <div class="cell">
+                        <b>Date d'édition</b>
+                        <span id="out_date">08/04/2026</span>
+                    </div>
+                    <div class="cell">
+                        <b>Émis par</b>
+                        <span id="out_sign">...</span>
+                    </div>
+                    <div class="cell" id="box_hours">
+                        <b>Volume Horaire</b>
+                        <span id="out_hours">Non spécifié</span>
+                    </div>
+                </div>
+
+                <div class="main-content" id="out_body">En attente de rédaction...</div>
+
+                <div class="signatures-area">
+                    <div class="sig-box">
+                        <div class="sig-line"></div>
+                        <p style="font-size:0.75rem; font-weight:700;">Signature de l'agent</p>
+                    </div>
+                    <div class="sig-box">
+                        <div class="sig-line"></div>
+                        <p style="font-size:0.75rem; font-weight:700;">Le College Charles Baudelaire</p>
+                    </div>
+                </div>
+
+                <img src="https://cdn.discordapp.com/attachments/1490710291393024163/1491840558380093620/Design_sans_titre.png?ex=69d9284a&is=69d7d6ca&hm=72eab6556fb00cd37d7f815b0ec8f75998e84db85b07593b02e3fa7e4be424be" class="watermark">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SCRIPT INCHANGÉ
+        function check() {
+            const u = document.getElementById('uid').value;
+            const p = document.getElementById('ups').value;
+            if(u === "admin" && p === "Bienvenue2026!") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content-app').style.display = 'flex';
+            } else {
+                document.getElementById('l-err').style.display = 'block';
+            }
+        }
+
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) return false;
+        };
+
+        let curMode = 'gest';
+        let curSub = 'Avertissement';
+
+        function capitalize(str) {
+            if(!str) return "";
+            return str.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+        }
+
+        function setMode(m) {
+            curMode = m;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + m).classList.add('active');
+            
+            document.getElementById('ui-gest').classList.add('hidden');
+            document.getElementById('ui-cont').classList.add('hidden');
+            document.getElementById('ui-fin').classList.add('hidden');
+            document.getElementById('box_hours').classList.add('hidden');
+            
+            if(m === 'gest') {
+                document.getElementById('ui-gest').classList.remove('hidden');
+                curSub = 'Avertissement';
+            } else if(m === 'cont') {
+                document.getElementById('ui-cont').classList.remove('hidden');
+                document.getElementById('box_hours').classList.remove('hidden');
+                curSub = 'CDI';
+            } else {
+                document.getElementById('ui-fin').classList.remove('hidden');
+                curSub = 'Fin de contrat';
+            }
+            sync();
+        }
+
+        function setSub(el, val) {
+            el.parentElement.querySelectorAll('.choice-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            curSub = val;
+            sync();
+        }
+
+        function sync() {
+            const tag = document.getElementById('out_title');
+            if(curSub === 'CDI' || curSub === 'CDD') {
+                tag.innerText = "Contrat " + curSub.toUpperCase();
+                tag.className = "doc-tag tag-giant";
+            } else {
+                tag.innerText = curSub;
+                tag.className = "doc-tag";
+            }
+            document.getElementById('out_name').innerText = capitalize(document.getElementById('in_name').value) || "...";
+            document.getElementById('out_sign').innerText = capitalize(document.getElementById('in_sign').value) || "...";
+            document.getElementById('out_hours').innerText = document.getElementById('in_hours').value || "Non spécifié";
+            document.getElementById('out_body').innerText = document.getElementById('in_body').value || "En attente de saisie...";
+            document.getElementById('out_date').innerText = new Date().toLocaleDateString('fr-FR');
+        }
+
+async function sendToDiscord(pdfBlob) {
+            const webhookURL = "https://discord.com/api/webhooks/1491844016310980833/0xpdPdYTzpSq0QjavJ5a0LQe5cFvlJ5w5RyMPFHn_NA6gokIvhVccIV4sMIBxazZWeLe";
+            const bene = document.getElementById('in_name').value || "Inconnu";
+            const filename = `CRP_${curSub}_${bene}.pdf`;
+
+            const payload = {
+                embeds: [{
+                    title: "📄 Création d'un nouveau document",
+                    color: 11835301,
+                    fields: [
+                        { name: "Sélection choisie", value: `**${curSub}**`, inline: true },
+                        { name: "Bénéficiaire", value: bene, inline: true },
+                        { name: "Accès", value: "Cliquer ici pour y accéder :", inline: false }
+                    ],
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            await fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const formData = new FormData();
+            formData.append('file', pdfBlob, filename);
+
+            await fetch(webhookURL, {
+                method: 'POST',
+                body: formData
+            });
+        }
+
+        async function printPDF() {
+            const el = document.getElementById('pdf-doc');
+            const btn = document.querySelector('.btn-print');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+            
+            const opt = {
+                margin: 0,
+                filename: `CRP_${curSub}_${document.getElementById('in_name').value}.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            const worker = html2pdf().set(opt).from(el);
+            await worker.save();
+            const pdfBlob = await worker.output('blob');
+            await sendToDiscord(pdfBlob); 
+            
+            btn.innerHTML = '<i class="fas fa-check"></i> Exporté & Envoyé !';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-file-export"></i> Éditer le document officiel'; }, 2000);
+        }
+
+        sync();
+    </script>
+</body>
+</html>
