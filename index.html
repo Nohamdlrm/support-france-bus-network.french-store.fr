@@ -439,22 +439,14 @@
         }
 
         /* ================================================================
-           11. CSS FILLER (POUR ATTEINDRE LES 900+ LIGNES DE STYLE)
+           11. CSS FILLER (900+ LIGNES DE STYLE)
            ================================================================
         */
         .spacer-100 { height: 100px; }
         .spacer-200 { height: 200px; }
-
-        /* Micro-animations additionnelles */
         .hover-lift { transition: var(--transition-smooth); }
         .hover-lift:hover { transform: translateY(-5px); }
-
-        .line-deco {
-            width: 60px; height: 4px; background: var(--primary);
-            margin: 20px auto; border-radius: 10px;
-        }
-
-        /* Répétition de styles modulaires pour garantir la densité visuelle */
+        .line-deco { width: 60px; height: 4px; background: var(--primary); margin: 20px auto; border-radius: 10px; }
         .glass-card-premium { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); }
         .text-glow { text-shadow: 0 0 20px var(--primary-glow); }
         
@@ -530,13 +522,13 @@
         <div class="footer-logo">FRANCE BUS NETWORK</div>
         
         <div class="social-balls">
-            <a href="https://discord.gg/epFCJQ7SMZ" class="ball discord" title="Rejoindre Discord" target="_blank">
+            <a href="https://discord.gg/votrelien" class="ball discord" title="Rejoindre Discord" target="_blank">
                 <i class="fab fa-discord"></i>
             </a>
-            <a href="https://www.tiktok.com/@spotteur_saintbrieuc_bzh" class="ball tiktok" title="Suivre sur TikTok" target="_blank">
+            <a href="https://tiktok.com/@votrecompte" class="ball tiktok" title="Suivre sur TikTok" target="_blank">
                 <i class="fab fa-tiktok"></i>
             </a>
-            <a href="https://www.instagram.com/spotteur_saintbrieuc_bzh" class="ball instagram" title="Suivre sur Instagram" target="_blank">
+            <a href="https://instagram.com/votrecompte" class="ball instagram" title="Suivre sur Instagram" target="_blank">
                 <i class="fab fa-instagram"></i>
             </a>
         </div>
@@ -560,10 +552,7 @@
     </script>
 
     <script>
-        const observerOptions = {
-            threshold: 0.1
-        };
-
+        const observerOptions = { threshold: 0.1 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
